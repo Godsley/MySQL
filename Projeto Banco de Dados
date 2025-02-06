@@ -1,0 +1,164 @@
+CREATE DATABASE IF NOT EXISTS producao;
+
+USE producao;
+
+CREATE TABLE Operador (
+    ID_Operador INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(100),
+    CPF VARCHAR(14) UNIQUE,
+    Sexo CHAR(1),
+    Turno VARCHAR(20),
+    Telefone VARCHAR(20),
+    Telefone_de_Emergencia VARCHAR(20)
+);
+
+CREATE TABLE Produto_Final (
+    ID_Produto_Final INT AUTO_INCREMENT PRIMARY KEY,
+    Bobina VARCHAR(100),
+    Tamanho_Bobina DECIMAL(10, 2),
+    Numero_de_fios INT
+);
+
+CREATE TABLE Maquina (
+    ID_Maquina INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Operador INT,
+    Bitola DECIMAL(5, 2),
+    Cor VARCHAR(50),
+    Tipo_da_Maquina VARCHAR(50),
+    FOREIGN KEY (ID_Operador) REFERENCES Operador(ID_Operador)
+);
+
+CREATE TABLE Relatorio_Produto_Final (
+    ID_Relatorio_Prod_Final INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Produto_Final INT,
+    Inicio_Tempo_Ocioso DATETIME,
+    Inicio DATETIME,
+    Final DATETIME,
+    Final_Tempo_Ocioso DATETIME,
+    Paradas_da_Bobina INT,
+    Tempo_Das_Paradas DECIMAL(10, 2),
+    FOREIGN KEY (ID_Produto_Final) REFERENCES Produto_Final(ID_Produto_Final)
+);
+
+CREATE TABLE Parada (
+    ID_Parada INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Maquina INT,
+    Motivo_Parada VARCHAR(255),
+    Inicio_Parada DATETIME,
+    Termino_Parada DATETIME,
+    Tempo_Parado TIME,
+    FOREIGN KEY (ID_Maquina) REFERENCES Maquina(ID_Maquina)
+);
+
+CREATE TABLE Ordem_Producao (
+    ID_Ordem_Prod INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Operador INT,
+    Ordem_de_Producao VARCHAR(50),
+    Produto VARCHAR(100),
+    Lote_Cobre VARCHAR(50),
+    FOREIGN KEY (ID_Operador) REFERENCES Operador(ID_Operador)
+);
+
+CREATE TABLE Relatorio_Producao (
+    ID_Relatorio_Prod INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Ordem_Prod INT,
+    Peso_do_Cobre DECIMAL(10, 2),
+    Media_KG_Min DECIMAL(10, 2),
+    Inicio_Producao DATETIME,
+    Final_Producao DATETIME,
+    Tempo_Prod_Bobina DECIMAL(10, 2),
+    Observacoes TEXT,
+    FOREIGN KEY (ID_Ordem_Prod) REFERENCES Ordem_Producao(ID_Ordem_Prod)
+);
+
+CREATE TABLE Diario_Producao (
+    ID_Diario_de_Producao INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Ordem_Prod INT,
+    Turno VARCHAR(20),
+    Data DATE,
+    Metragem_Produzida DECIMAL(10, 2),
+    Inicio_Cont_Tempo_Ocioso DATETIME,
+    Final_Cont_Tempo_Ocioso DATETIME,
+    FOREIGN KEY (ID_Ordem_Prod) REFERENCES Ordem_Producao(ID_Ordem_Prod)
+);
+
+CREATE TABLE Materia_Prima (
+    ID_Materia_Prima INT AUTO_INCREMENT PRIMARY KEY,
+    Lote_Cobre VARCHAR(50),
+    Tipo_de_Produto VARCHAR(100),
+    Diametro_Fio DECIMAL(5, 2),
+    Lote_PVC VARCHAR(50),
+    N_de_Fios INT,
+    Bobina VARCHAR(100)
+);
+
+INSERT INTO Operador (Nome, CPF, Sexo, Turno, Telefone, Telefone_de_Emergencia) VALUES
+('Mauro da Silva', '123.456.789-01', 'M', 'Manhã', '(41) 98765-4321', '(41) 99999-8888'),
+('Celson Luiz Souza', '234.567.890-12', 'M', 'Manhã', '(41) 91234-5678', '(41) 98888-7777'),
+('Marcio Careca Ribeiro', '345.678.901-23', 'M', 'Manhã', '(41) 93456-7890', '(41) 97777-6633'),
+('Bica de pedra', '333.678.901-23', 'M', 'Tarde', '(41) 97766-7890', '(41) 99730-6611'),
+('Guinaldo da silva', '444.678.901-23', 'M', 'Tarde', '(41) 93987-7990', '(41) 97540-6622'),
+('Alexandre Moraes', '555.678.901-23', 'M', 'Tarde', '(41) 91234-8090', '(41) 96996-6655'),
+('Esdra musk', '666.678.901-23', 'M', 'Noite', '(41) 94002-8190', '(41) 98923-6444'),
+('Osvaldo sauro', '777.678.901-23', 'M', 'Noite', '(41) 98922-8290', '(41) 94003-6677');
+
+INSERT INTO Maquina (ID_Operador, Bitola, Cor, Tipo_da_Maquina) VALUES
+(1, 1, 'Pt', 'Trefila'),
+(2, 1.50, 'az', 'Trefila'),
+(3, 2.50, 'vd', 'Trefila'),
+(4, 4, 'vm', 'Trefila'),
+(5, 6, 'am', 'Trefila'),
+(6, 10, 'cz', 'Trefila'),
+(7, 16, 'br', 'Trefila'),
+(8, 25, 'mr', 'Trefila'),
+(1, 1, 'Pt', 'Extrusora'),
+(2, 1.50, 'az', 'Extrusora'),
+(3, 2.50, 'vd', 'Extrusora'),
+(4, 4, 'vm', 'Extrusora'),
+(5, 6, 'am', 'Extrusora'),
+(6, 10, 'cz', 'Extrusora'),
+(7, 16, 'br', 'Extrusora'),
+(8, 25, 'mr', 'Extrusora'),
+(1, 1, 'Pt', 'Buncher'),
+(2, 1.50, 'az', 'Buncher'),
+(3, 2.50, 'vd', 'Buncher'),
+(4, 4, 'vm', 'Buncher'),
+(5, 6, 'am', 'Buncher'),
+(6, 10, 'cz', 'Buncher'),
+(7, 16, 'br', 'Buncher'),
+(8, 25, 'mr', 'Buncher');
+
+INSERT INTO Parada (ID_Maquina, Motivo_Parada, Inicio_Parada, Termino_Parada, Tempo_Parado) VALUES
+(1, 'Manutenção programada', '2024-11-25 08:00:00', '2024-11-25 10:00:00', '02:00:00'),
+(2, 'Problema técnico', '2024-11-25 09:30:00', '2024-11-25 11:00:00','01:30:00'),
+(3, 'Quebra de máquina', '2024-11-25 10:00:00', '2024-11-25 12:30:00', '02:30:00');
+
+INSERT INTO Ordem_Producao (ID_Operador, Ordem_de_Producao, Produto, Lote_Cobre) VALUES
+(1, 'OP12345', 'Cobre', 'LC001'),
+(2, 'OP12346', 'Alumínio', 'LC002'),
+(3, 'OP12347', 'Aço', 'LC003');
+
+INSERT INTO Relatorio_Producao (ID_Ordem_Prod, Peso_do_Cobre, Media_KG_Min, Inicio_Producao, Final_Producao, Tempo_Prod_Bobina, Observacoes) VALUES
+(1, 100.5, 5.5, '2024-11-25 08:00:00', '2024-11-25 10:00:00', '02:00:00', 'Produção dentro da meta'),
+(2, 150.0, 6.0, '2024-11-25 09:00:00', '2024-11-25 11:00:00', '02:00:00', 'Produção eficiente, sem falhas'),
+(3, 200.0, 4.8, '2024-11-25 07:00:00', '2024-11-25 09:00:00', '02:00:00', 'Problemas de máquina no início');
+
+INSERT INTO Diario_Producao (ID_Ordem_Prod, Turno, Data, Metragem_Produzida, Inicio_Cont_Tempo_Ocioso, Final_Cont_Tempo_Ocioso) VALUES
+(1, 'Manhã', '2024-11-25', 1500.5, '2024-11-25 08:00:00', '2024-11-25 08:15:00'),
+(2, 'Tarde', '2024-11-25', 2000.0, '2024-11-25 09:00:00', '2024-11-25 09:10:00'),
+(3, 'Noite', '2024-11-25', 2500.0, '2024-11-25 07:00:00', '2024-11-25 07:20:00');
+
+INSERT INTO Materia_Prima (Lote_Cobre, Tipo_de_Produto, Diametro_Fio, Lote_PVC, N_de_Fios, Bobina) VALUES
+('LC001', 'Cobre', 0.50, 'LP001', 2000, 'Bobina A'),
+('LC002', 'Alumínio', 0.75, 'LP002', 2500, 'Bobina B'),
+('LC003', 'Aço', 1.00, 'LP003', 3000, 'Bobina C');
+
+INSERT INTO Produto_Final (Bobina, Tamanho_Bobina, Numero_de_fios) VALUES
+('Bobina A', 10.5, 2000),
+('Bobina B', 12.0, 2500),
+('Bobina C', 15.0, 3000);
+
+INSERT INTO Relatorio_Produto_Final (ID_Produto_Final, Inicio_Tempo_Ocioso, Inicio, Final, Final_Tempo_Ocioso, Paradas_da_Bobina, Tempo_Das_Paradas) VALUES
+(1, '2024-11-25 08:00:00', '2024-11-25 08:15:00', '2024-11-25 10:00:00', '2024-11-25 10:10:00', 2, 30.0),
+(2, '2024-11-25 09:00:00', '2024-11-25 09:20:00', '2024-11-25 11:00:00', '2024-11-25 11:05:00', 1, 15.0),
+(3, '2024-11-25 07:00:00', '2024-11-25 07:30:00', '2024-11-25 09:30:00', '2024-11-25 09:35:00', 3, 45.0);
